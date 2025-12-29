@@ -1,0 +1,31 @@
+name: Scheduled Niche Hunt
+
+on:
+  schedule:
+    # This runs every 6 hours (UTC time)
+    - cron: '0 */6 * * *'
+  workflow_dispatch: # This adds a "Run Now" button in GitHub
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          pip install google-api-python-client supabase python-dotenv
+
+      - name: Run Scraper
+        env:
+          # This pulls your keys from the GitHub "Secrets" vault
+          YT_API_KEY: ${{ secrets.YT_API_KEY }}
+          SB_URL: ${{ secrets.SB_URL }}
+          SB_KEY: ${{ secrets.SB_KEY }}
+        run: python scraper.py "passive income"
